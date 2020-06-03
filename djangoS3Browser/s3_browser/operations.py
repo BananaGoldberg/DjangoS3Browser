@@ -8,12 +8,11 @@ except ImportError:
 
 from django.conf import settings
 
-s3 = boto3.resource('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
-s3client = boto3.client('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
+s3 = boto3.resource('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
+s3client = boto3.client('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
 bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
 bucket_location = s3client.get_bucket_location(Bucket=settings.AWS_STORAGE_BUCKET_NAME)
+s3bucket_url = s3.Bucket(settings.AWS_S3_ENDPOINT_URL)
 """
 Big Note: for [1:]
 -starts with the default "-" sign for the selected file location.
@@ -40,8 +39,10 @@ def get_files(main_folder, result, sort_a_z):
         for obj in result:
             # main_folder[1:] exp; -folder1/folder2 => delete "-"
             if main_folder[1:] != obj.get('Key'):  # if obj is not folder item
-                object_url = "https://s3-{0}.amazonaws.com/{1}/{2}".format(
-                    bucket_location['LocationConstraint'], settings.AWS_STORAGE_BUCKET_NAME, obj.get('Key'))
+                
+                #object_url = "https://s3-{0}.amazonaws.com/{1}/{2}".format(
+                object_url = "{0}{1}/{2}".format(setting.AWS_S3_ENDPOINT_URL, 
+                    settings.AWS_STORAGE_BUCKET_NAME, obj.get('Key'))
                 # for template file icon
                 icon_list = [
                     'ai.png', 'audition.png', 'avi.png', 'bridge.png', 'css.png', 'csv.png', 'dbf.png', 'doc.png',
